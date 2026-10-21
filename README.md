@@ -1,23 +1,25 @@
 # Grimware — Cyber Grimoire
 
-A public static-web version of Cyber Grimoire.
+Public static-site edition of Cyber Grimoire.
 
-## Website
-To publish this repository on GitHub Pages, open **Settings → Pages**, select **Deploy from a branch**, choose **main** and **/(root)**, and save. Your site should then be available at https://carlosg888.github.io/Grimware/ (once GitHub Pages reports a successful deployment).
+## Publish with GitHub Pages
+This repository contains an automatic deployment workflow in `.github/workflows/pages.yml`.
 
-## Features
-- Obsidian Supreme visual interface
-- Intention chambers, affirmations, guided sessions, and journaling
-- Local browser storage for visitor-created entries
+1. Open **Settings → Pages** in the repository.
+2. Under **Build and deployment → Source**, choose **GitHub Actions** (not "Deploy from a branch").
+3. Open **Actions → Publish Grimware**, and use **Run workflow** if a run did not trigger automatically.
+4. When the deployment succeeds, the website will be **https://carlosg888.github.io/Grimware/**.
 
-## Assets
-The HTML refers to these assets; ensure they are present in the repository:
+## Required media assets
+The app references these files, which must exist in the repository for graphics and audio to work:
 - `Cyber_Grimoire_Sigil.png`
 - `audio/brotherhood_empire_anna.mp3`
 - `audio/shadow_alchemy_anna.mp3`
 
-## Privacy notice
-The author's embedded personal dream entry was removed from the public version. Visitor-created journal entries are stored **in the visitor's browser**, not in GitHub, but are not password-protected or encrypted; anyone with access to that browser profile may read them. Do not use this as a secure vault for sensitive entries.
+Upload them from the `Grimware_Public_Ready.zip` package to the same relative paths. Do **not** upload the ZIP alone.
 
-## Licensing
-No license is granted by default. The music/audio and other artwork are not explicitly licensed for reuse.
+## Privacy
+The original author's embedded private dream entry was excluded from the public HTML. Entries created by visitors use browser localStorage; they are neither encrypted nor password-protected, and anyone using the same browser profile may access them. Do not treat this application as a secure vault.
+
+## Ownership and licensing
+The source and audio are not licensed for third-party reuse unless the owner adds an explicit license. Ensure permissions to distribute embedded audio and artwork publicly.
