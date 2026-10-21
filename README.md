@@ -23,3 +23,12 @@ The original author's embedded private dream entry was excluded from the public 
 
 ## Ownership and licensing
 The source and audio are not licensed for third-party reuse unless the owner adds an explicit license. Ensure permissions to distribute embedded audio and artwork publicly.
+
+## Audio playback and troubleshooting
+The public audio section now checks whether each MP3 is hosted. If absent, it disables **Play recording** and offers **Listen to guided narration**, a shorter browser-generated voice alternative without Anna's original voice, backing music, or timed silence. Users must tap to start speech (mobile browsers restrict autoplay).
+
+To enable the **original** full-length tracks for all visitors, commit both MP3 files to the following exact paths (create the `audio/` folder if needed):
+- `audio/shadow_alchemy_anna.mp3`
+- `audio/brotherhood_empire_anna.mp3`
+
+GitHub browser uploads can upload a batch of files from the extracted ZIP, but don't upload the ZIP alone. Once committed, wait for the GitHub Pages deployment and refresh the webpage. Check that direct URLs under `https://carlosg888.github.io/Grimware/audio/` load.
