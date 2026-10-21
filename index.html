@@ -32,7 +32,114 @@ let ix=0,step=0,answers=guide.steps.map(()=>''),timer=null;const q=s=>el.querySe
 function copy(s){if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(()=>notice('Copied')).catch(()=>fallbackCopy(s))}else fallbackCopy(s)}function fallbackCopy(s){let t=document.createElement('textarea');t.value=s;document.body.appendChild(t);t.select();try{document.execCommand('copy');notice('Copied')}catch(e){notice('Select and copy the text manually')}t.remove()}
 function hash(s){let n=2166136261;for(let c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0}
 function generateSigil(){const t=field('sigil_text')||'I direct my will with clarity';const canvas=document.getElementById('sigil_canvas'),ctx=canvas.getContext('2d');const w=canvas.width=900,h=canvas.height=900,x=w/2,y=h/2;let seed=hash(t);function r(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296}ctx.fillStyle='#0b0d13';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#cba46b';ctx.lineWidth=3;for(let j=0;j<3;j++){ctx.beginPath();ctx.arc(x,y,335-j*37,0,Math.PI*2);ctx.stroke()}for(let i=0;i<13;i++){const a=r()*Math.PI*2,b=r()*Math.PI*2,ra=65+r()*230,rb=65+r()*230;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*ra,y+Math.sin(a)*ra);ctx.quadraticCurveTo(x+Math.cos((a+b)/2)*100,y+Math.sin((a+b)/2)*100,x+Math.cos(b)*rb,y+Math.sin(b)*rb);ctx.stroke()}for(let i=0;i<8;i++){const a=i*Math.PI/4+seed%100/100;ctx.beginPath();ctx.arc(x+Math.cos(a)*270,y+Math.sin(a)*270,7,0,Math.PI*2);ctx.fillStyle='#e7c785';ctx.fill()}ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);ctx.fill();notice('Your intention has a new sigil')}
-function renderMeditations(){let el=document.getElementById('pg_meditations');el.innerHTML=sectionTitle('RECORDED MEDITATION SANCTUARY','The Anna Studio','Two complete 10-minute, locally packaged sessions with Anna’s actual audio recordings. Press play to begin; the silence and soundscape are already mixed into the tracks.')+`<div class="grid"><div class="player"><div class="eyebrow">PRIVATE REFLECTION • 10:00</div><h3>Shadow Alchemy</h3><p>Recognition, release, new patterns, and grounded integration.</p><audio id="audio_shadow" controls preload="metadata" src="audio/shadow_alchemy_anna.mp3"></audio><div class="row"><button id="play_shadow">▶ Begin session</button><button id="restart_shadow">↺ Restart</button><a href="audio/shadow_alchemy_anna.mp3" download>Download MP3</a></div></div><div class="player"><div class="eyebrow">PARTNERSHIP VISUALIZATION • 10:00</div><h3>Brotherhood Empire</h3><p>Qualified leads, ethical solutions, collaboration, and profitable deals.</p><audio id="audio_empire" controls preload="metadata" src="audio/brotherhood_empire_anna.mp3"></audio><div class="row"><button id="play_empire">▶ Begin session</button><button id="restart_empire">↺ Restart</button><a href="audio/brotherhood_empire_anna.mp3" download>Download MP3</a></div></div></div><div class="card"><h3>After the meditation</h3><p>The track ends with your guided reflection. Continue into a journal session to translate what you experienced into meaningful action.</p><div class="row"><button data-go="shadow">Open shadow work</button><button data-go="enterprise">Open business visualization</button></div></div><p class="fine">These are pre-mixed 10-minute MP3s using the recordings you provided. The 0.80× delivery comes from the source recordings and any editing already applied; the player uses normal playback so it does not slow them twice. For audio playback, extract the entire ZIP before opening index.html.</p>`;wireGo(el);for(let s of ['shadow','empire']){const a=el.querySelector('#audio_'+s);el.querySelector('#play_'+s).addEventListener('click',()=>{for(let other of ['shadow','empire'])if(other!==s)el.querySelector('#audio_'+other).pause();a.play().catch(()=>notice('Playback blocked: press Play on the built-in player'))});el.querySelector('#restart_'+s).addEventListener('click',()=>{a.currentTime=0;a.play().catch(()=>notice('Use audio player Play button'))});}}
+
+const GRIMWARE_GUIDES = {
+ shadow: [
+  "Welcome to Shadow Alchemy. Find a comfortable position and allow your shoulders to relax.",
+  "Inhale gently for four counts. Exhale slowly for six. Let your attention settle.",
+  "Bring to mind one pattern you are ready to understand. You do not need to judge it.",
+  "Ask yourself: What is this pattern protecting? What does it need from me?",
+  "Imagine meeting that part of yourself with patience and clear boundaries.",
+  "Choose one small action that reflects the person you are becoming.",
+  "Breathe slowly. When you are ready, open your eyes and write down your insight."
+ ],
+ empire: [
+  "Welcome to Brotherhood Empire. Breathe deeply and settle into a clear, confident state.",
+  "Picture yourself and your business partner working together with integrity and focus.",
+  "Visualize meaningful conversations with clients who value your work.",
+  "Imagine each qualified lead receiving prompt follow up and a helpful, ethical solution.",
+  "Feel the steadiness of sound decisions, trustworthy relationships, and completed agreements.",
+  "Choose a practical step you can take today to strengthen your business.",
+  "Breathe slowly. Return to the present and turn your intention into action."
+ ]
+};
+let grimwareSpeech = null;
+function stopGrimwareSpeech(){
+ if("speechSynthesis" in window) window.speechSynthesis.cancel();
+ grimwareSpeech = null;
+}
+function speakGrimwareGuide(which, status){
+ if(!("speechSynthesis" in window)){
+  status.textContent="This browser does not support voice narration. Try Safari or Chrome.";
+  return;
+ }
+ stopGrimwareSpeech();
+ const lines = GRIMWARE_GUIDES[which];
+ let index = 0;
+ const session = {stopped:false};
+ grimwareSpeech = session;
+ const playNext = () => {
+  if(grimwareSpeech !== session || session.stopped) return;
+  if(index >= lines.length){
+   status.textContent="Browser narration completed. This was a short fallback, not the original Anna recording.";
+   grimwareSpeech=null;
+   return;
+  }
+  const utterance = new SpeechSynthesisUtterance(lines[index++]);
+  utterance.lang="en-US";
+  utterance.rate=0.8;
+  utterance.pitch=1;
+  const voices=window.speechSynthesis.getVoices();
+  utterance.voice=voices.find(v=>v.lang.startsWith("en") && /female|samantha|victoria|ava|allison|serena/i.test(v.name)) || voices.find(v=>v.lang.startsWith("en")) || null;
+  utterance.onend=()=>{if(grimwareSpeech===session)playNext()};
+  utterance.onerror=()=>{status.textContent="Narration was interrupted. Tap Listen again.";if(grimwareSpeech===session)grimwareSpeech=null};
+  status.textContent="Playing browser-generated guided narration ("+index+"/"+lines.length+")";
+  window.speechSynthesis.speak(utterance);
+ };
+ playNext();
+}
+function renderMeditations(){
+ const el=document.getElementById("pg_meditations");
+ const tracks=[
+  {id:"shadow",name:"Shadow Alchemy",detail:"Recognition, release and integration.",file:"audio/shadow_alchemy_anna.mp3"},
+  {id:"empire",name:"Brotherhood Empire",detail:"Partnership, ethical opportunities and business action.",file:"audio/brotherhood_empire_anna.mp3"}
+ ];
+ el.innerHTML=sectionTitle("GUIDED AUDIO SANCTUARY","The Anna Studio","Play the original recordings when available, or use browser voice narration if audio files have not yet been uploaded.")+
+  '<div class="grid">'+tracks.map(t=>'<div class="player"><div class="eyebrow">GUIDED SESSION</div><h3>'+t.name+'</h3><p>'+t.detail+'</p><audio id="audio_'+t.id+'" controls preload="metadata" style="width:100%"></audio><p class="fine" id="status_'+t.id+'" role="status" aria-live="polite">Checking recording availability…</p><div class="row"><button id="play_'+t.id+'">▶ Play recording</button><button id="narrate_'+t.id+'">♫ Listen to guided narration</button><button id="stop_'+t.id+'">■ Stop voice</button><a id="download_'+t.id+'" href="'+t.file+'" download hidden>Download MP3</a></div></div>').join('')+'</div>'+
+  '<div class="card"><h3>After your meditation</h3><p>Record your reflections or turn your vision into a concrete step.</p><div class="row"><button data-go="shadow">Open shadow work</button><button data-go="enterprise">Open business visualization</button></div></div>'+
+  '<p class="fine">The original MP3s include Anna and their music/silence mix. Browser narration uses a different synthesized voice, a shorter script, and no music. Browser autoplay restrictions require you to tap a playback button.</p>';
+ wireGo(el);
+ tracks.forEach(t=>{
+  const audio=el.querySelector("#audio_"+t.id);
+  const status=el.querySelector("#status_"+t.id);
+  const play=el.querySelector("#play_"+t.id);
+  const download=el.querySelector("#download_"+t.id);
+  const mediaUrl=new URL(t.file,document.baseURI);
+  audio.src=mediaUrl.href;
+  const markUnavailable=()=>{
+   status.textContent="Original recording is not hosted here yet. Tap Listen to guided narration for the browser-voice alternative.";
+   play.disabled=true;
+   download.hidden=true;
+  };
+  audio.addEventListener("error",markUnavailable);
+  audio.addEventListener("playing",()=>{
+   status.textContent="Playing original Anna recording.";
+   stopGrimwareSpeech();
+  });
+  play.addEventListener("click",()=>{
+   stopGrimwareSpeech();
+   tracks.forEach(other=>{if(other.id!==t.id)el.querySelector("#audio_"+other.id).pause()});
+   audio.play().catch(()=>{
+    markUnavailable();
+    status.textContent="Recording could not be played. Use guided narration below or check your browser audio settings.";
+   });
+  });
+  el.querySelector("#narrate_"+t.id).addEventListener("click",()=>{
+   tracks.forEach(other=>el.querySelector("#audio_"+other.id).pause());
+   speakGrimwareGuide(t.id,status);
+  });
+  el.querySelector("#stop_"+t.id).addEventListener("click",()=>{
+   stopGrimwareSpeech();
+   status.textContent="Browser narration stopped.";
+  });
+  fetch(mediaUrl.href,{method:"HEAD",cache:"no-store"}).then(response=>{
+   if(!response.ok)throw Error("HTTP "+response.status);
+   play.disabled=false;
+   download.hidden=false;
+   status.textContent="Original recording available. Press Play recording.";
+  }).catch(markUnavailable);
+ });
+}
 function recordCard(r,k,i){const date=esc(r.date||'');const title=esc(r.title||r.type||'Session');let body=esc(r.body||r.text||'');return `<div class="card"><div class="eyebrow">${date} · ${esc(r.type||k)}</div><h3>${title}</h3><p style="white-space:pre-wrap">${body}</p>${r.interpretation?`<h3>Spiritual interpretation</h3><p>${esc(r.interpretation)}</p>`:''}${r.affirmation?`<div class="quote">${esc(r.affirmation)}</div>`:''}<div class="row action"><button class="smallbtn" data-delete="${i}">Delete entry</button></div></div>`}
 function renderRecords(k){let el=document.getElementById('pg_'+k);let info={intentions:['PERSONAL PRACTICE','Intention Vault','Write an intention; revisit it and connect it with a practical action.'],servitors:['SYMBOLIC PRACTICE','Servitor Forge','Create a symbolic construct with a defined purpose and boundaries.'],journal:['PRIVATE ARCHIVE','Dreams & Synchronicities','Keep dreams, déjà vu, interpretations, and reflection in your personal temple.'],shadow:['PERSONAL OR SHARED REFLECTION','Shadow Work Laboratory','Name one pattern, explore its protective function, practice a different response.'],enterprise:['SHARED BUSINESS SANCTUM','Enterprise Visualization','Visualize ethical foreclosure-prevention services and sustainable real estate growth.'],actions:['PARTNERSHIP PLANNING','The Next Right Actions','Assign business tasks and take grounded steps after visualization.']}[k];let extra='';if(k==='shadow')extra=`<div class="card"><h3>Guided exercise • Release and replace</h3><p>1. Name a recurring fear or habit. 2. Notice what triggers it. 3. Ask what it has tried to protect. 4. Choose a compassionate new response. 5. Name one action you can take today.</p><button data-go="meditations">♫ Listen to Shadow Alchemy</button></div>`;if(k==='enterprise')extra=`<div class="card"><h3>Guided exercise • The ethical closing</h3><p>Picture a homeowner receiving clear, lawful options. Visualize a serious prospect, accurate information, a respectful conversation, a favorable and ethical agreement, and fair compensation. Afterward, write down one specific lead-generation action.</p><button data-go="meditations">♫ Listen to Brotherhood Empire</button></div>`;
 el.innerHTML=sectionTitle(info[0],info[1],info[2])+extra+`<div class="card"><h3>Create a ${k==='actions'?'task':'new entry'}</h3><label>Title / intention<input id="entry_title" placeholder="Name this ${k==='actions'?'action':'working'}"></label><label>${k==='actions'?'Owner, deadline, and concrete deliverable':'Notes, observations, reflections, and next actions'}<textarea id="entry_body" placeholder="Record your experience..." ></textarea></label><button id="add_entry">Save entry</button><div class="status" id="entry_status"></div></div><h3>Saved records</h3><div id="saved_entries">${(db[k]||[]).slice().reverse().map((r,j)=>recordCard(r,k,(db[k]||[]).length-1-j)).join('')||'<p class="fine">No saved entries yet.</p>'}</div>`;
