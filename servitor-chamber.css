@@ -1,0 +1,35 @@
+/* Servitor Chamber — restrained obsidian / antique-gold interface */
+.sv-layout{display:grid;grid-template-columns:minmax(235px,310px) minmax(0,1fr);gap:20px;align-items:start;margin:24px 0}
+.sv-library{position:sticky;top:18px;max-height:85vh;overflow:auto}
+.sv-workspace{min-width:0}
+.sv-highlight{padding:14px 18px;border-left:3px solid #a88b57;border-radius:8px;background:#1a1717;color:#d7c8b4;font-size:13px}
+.sv-label{display:block;margin:12px 0;color:#e7d2ab;font-size:13px}
+.sv-input{width:100%;max-width:100%;font-size:14px;line-height:1.6}
+.sv-input:focus-visible{outline:2px solid #d6b57e;outline-offset:1px}
+.sv-required{color:#e6ac79}
+.sv-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.sv-2>label{min-width:0}
+.sv-progress{display:flex;gap:6px;margin:22px 0 18px}
+.sv-progress-btn{flex:1;min-width:0;padding:9px 3px;border-radius:7px;background:#171920;border-color:#59452b;color:#cbb995;font:13px system-ui}
+.sv-progress-btn.selected{background:#785b31;color:#fff4d5;border-color:#e1bf7f}
+.sv-guidance{background:#17161c;border:1px solid #514430;padding:13px 16px;color:#d2c3a9;border-radius:12px;font-size:13px;line-height:1.7;margin:14px 0}
+.sv-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.sv-actions button{max-width:100%}
+.sv-canvas{display:block;width:min(100%,460px);aspect-ratio:1;margin:20px auto;background:#090b11;border:1px solid #796042;border-radius:20px}
+.sv-record{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:5px;width:100%;margin:12px 0;background:linear-gradient(120deg,#16161c,#0c0f16);border:1px solid #4e4034;overflow-wrap:anywhere}
+.sv-record:hover{border-color:#b79863}
+.sv-record-title{font:20px Georgia;color:#eed3a4}
+.sv-record-purpose{font-size:12px;line-height:1.5;color:#d4c2ac;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.sv-record-meta{font-size:11px;color:#aa9c88}
+.sv-pill{font-size:11px;text-transform:uppercase;letter-spacing:1px;display:inline-block;border:1px solid #796343;color:#ead1a5;border-radius:50px;padding:4px 10px}
+.sv-active{color:#bde1bd;border-color:#698e69}
+.sv-complete{color:#d3c6f0;border-color:#80719c}
+.sv-resting{color:#e2cf9b;border-color:#8c7947}
+.sv-log{border-bottom:1px solid #51402c;padding:12px 0;overflow-wrap:anywhere}
+.sv-log p{white-space:pre-wrap;margin:5px 0}
+.sv-guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:22px 0}
+.sv-guide-grid>div{border:1px solid #4b3d30;border-radius:14px;padding:16px;background:#15151b}
+.sv-guide-grid h3{font-size:20px;margin:8px 0}
+.sv-guide-grid p{font-size:13px}
+@media(max-width:1050px){.sv-layout{grid-template-columns:1fr}.sv-library{position:static;max-height:none}.sv-2{grid-template-columns:1fr}}
+@media(max-width:600px){.sv-progress-btn{font-size:11px;padding:8px 1px}.sv-workspace{padding:14px}.sv-guide-grid{grid-template-columns:1fr}.sv-actions button{flex:1}}
