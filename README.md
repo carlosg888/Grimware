@@ -32,3 +32,24 @@ To enable the **original** full-length tracks for all visitors, commit both MP3 
 - `audio/brotherhood_empire_anna.mp3`
 
 GitHub browser uploads can upload a batch of files from the extracted ZIP, but don't upload the ZIP alone. Once committed, wait for the GitHub Pages deployment and refresh the webpage. Check that direct URLs under `https://carlosg888.github.io/Grimware/audio/` load.
+
+## Servitor Chamber (interactive)
+
+Open **Solo Work → ✦ Servitor Chamber**.
+
+- Guided 7-stage creation wizard: identity, purpose, boundaries, sigil, activation, maintenance, review/dissolution.
+- Reproducible sigil generator with constellation, radiant and angular styles; colors and variation controls; PNG export.
+- Each servitor has an editable purpose, instructions, ritual wording, boundaries, status (draft, active, paused, complete), and timestamped working journal.
+- Search and filter saved records, duplicate or delete them, or export an individual servitor to JSON.
+- Prior simple Servitor Forge entries are migrated to the new format when opening the chamber.
+- Records are stored in the existing browser `localStorage` dataset and included in **Archive → Backups & Settings → Export backup**.
+
+**Privacy warning:** The public GitHub Pages source contains only the chamber's application code. Visitors' records stay in their own browsers; no account-based sync is provided. Local browser data is not encrypted and may disappear if site storage is cleared. Export backups regularly and avoid entering confidential information on shared devices.
+
+**Symbolic practice:** Servitors are presented as a voluntary chaos-magick / reflection practice. The program records ritual intentions and prompts actions; it makes no claim to autonomous spiritual or business results.
+
+The feature requires all three files to be hosted at the repository root:
+- `index.html`
+- `servitor-chamber.js`
+- `servitor-chamber.css`
+
